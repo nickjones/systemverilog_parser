@@ -17,6 +17,7 @@ func LexModule(lexer *Lexer) LexFn {
 		}
 
 		if strings.HasPrefix(lexer.InputToEnd(), ";") {
+			lexer.Pos++
 			lexer.Emit(lexertoken.TOKEN_MODULE)
 			return LexBegin
 		}

@@ -17,9 +17,11 @@ func LexClass(lexer *Lexer) LexFn {
 		}
 
 		if strings.HasPrefix(lexer.InputToEnd(), " extends ") {
+			lexer.Pos += 9
 			lexer.Emit(lexertoken.TOKEN_CLASS)
 			return LexSuperClass
 		} else if strings.HasPrefix(lexer.InputToEnd(), ";") {
+			lexer.Pos++
 			lexer.Emit(lexertoken.TOKEN_CLASS)
 			return LexBegin
 		}
