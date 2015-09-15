@@ -8,11 +8,11 @@ import (
 )
 
 /*
-This lexer function emits a TOKEN_PACKAGE then returns
+This lexer function emits a TOKEN_FUNCTION then returns
 the lexer for another statement.
 */
-func LexSuperClass(lexer *Lexer) LexFn {
-	log.Println("LexSuperClass")
+func LexFuncArgs(lexer *Lexer) LexFn {
+	log.Println("LexFuncArgs")
 	lexer.SkipWhitespace()
 	lexer.Ignore()
 	for {
@@ -20,9 +20,14 @@ func LexSuperClass(lexer *Lexer) LexFn {
 			return lexer.Errorf(errors.LEXER_ERROR_UNEXPECTED_EOF)
 		}
 
-		if strings.HasPrefix(lexer.InputToEnd(), ";") {
-			lexer.Emit(lexertoken.TOKEN_SUPERCLASS)
+		// Function with no args
+		if strings.HasPrefix(lexer.InputToEnd(), ",") {
+			lexer.Emit(lexertoken.TOKEN_FUNCTION_ARGUMENT)
 			lexer.Pos++
+			return LexFuncArgs
+		} else if strings.HasPrefix(lexer.InputToEnd(), ");") {
+			lexer.Emit(lexertoken.TOKEN_FUNCTION_ARGUMENT)
+			lexer.Pos += 2
 			return LexBegin
 		}
 

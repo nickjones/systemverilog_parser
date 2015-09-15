@@ -16,10 +16,11 @@ Based on work by Rob Pike
 http://cuddle.googlecode.com/hg/talk/lex.html#landing-slide
 */
 type Lexer struct {
-	Name   string
-	Input  string
-	Tokens chan lexertoken.Token
-	State  LexFn
+	Name      string
+	Input     string
+	Tokens    chan lexertoken.Token
+	State     LexFn
+	PrevState LexFn
 
 	Start int
 	Pos   int

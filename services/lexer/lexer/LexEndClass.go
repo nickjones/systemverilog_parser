@@ -7,23 +7,23 @@ import (
 	"strings"
 )
 
-/*
-This lexer function emits a TOKEN_PACKAGE then returns
-the lexer for another statement.
-*/
-func LexSuperClass(lexer *Lexer) LexFn {
-	log.Println("LexSuperClass")
-	lexer.SkipWhitespace()
+func LexEndClass(lexer *Lexer) LexFn {
+	log.Println("LexEndClass")
 	lexer.Ignore()
 	for {
 		if lexer.IsEOF() {
 			return lexer.Errorf(errors.LEXER_ERROR_UNEXPECTED_EOF)
 		}
 
-		if strings.HasPrefix(lexer.InputToEnd(), ";") {
-			lexer.Emit(lexertoken.TOKEN_SUPERCLASS)
+		// Function with no args
+		if strings.HasPrefix(lexer.InputToEnd(), "\n") {
+			lexer.Emit(lexertoken.TOKEN_END_CLASS)
 			lexer.Pos++
 			return LexBegin
+		} else if strings.HasPrefix(lexer.InputToEnd(), ":") {
+			lexer.Emit(lexertoken.TOKEN_END_CLASS)
+			lexer.Pos++
+			return LexLabel
 		}
 
 		lexer.Inc()
