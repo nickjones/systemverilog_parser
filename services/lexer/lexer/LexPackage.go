@@ -29,3 +29,26 @@ func LexPackage(lexer *Lexer) LexFn {
 		lexer.Inc()
 	}
 }
+
+func LexEndPackage(lexer *Lexer) LexFn {
+	log.Println("LexEndPackage")
+	lexer.Ignore()
+	for {
+		if lexer.IsEOF() {
+			return lexer.Errorf(errors.LEXER_ERROR_UNEXPECTED_EOF)
+		}
+
+		// Function with no args
+		if strings.HasPrefix(lexer.InputToEnd(), "\n") {
+			lexer.Emit(lexertoken.TOKEN_ENDPACKAGE)
+			lexer.Pos++
+			return LexBegin
+		} else if strings.HasPrefix(lexer.InputToEnd(), ":") {
+			lexer.Emit(lexertoken.TOKEN_ENDPACKAGE)
+			lexer.Pos++
+			return LexLabel
+		}
+
+		lexer.Inc()
+	}
+}
