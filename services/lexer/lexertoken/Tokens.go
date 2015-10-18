@@ -269,3 +269,10 @@ const WITHIN string = "within"
 const WOR string = "wor"
 const XNOR string = "xnor"
 const XOR string = "xor"
+
+// Operators
+var ASSIGNMENT_OPERATOR []string = []string{"=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=", "<<<=", ">>>="}
+var UNARY_OPERATOR []string = []string{"+", "-", "!", "~", "&", "~&", "|", "~|", "^", "~^", "^~"}
+var BINARY_OPERATOR []string = []string{"+", "-", "*", "/", "%", "==", "!=", "===", "!==", "==?", "!=?", "&&", "||", "**", "<", "<=", ">", ">=", "&", "|", "^", "^~", "~^", ">>", "<<", ">>>", "<<<", "->", "<->"}
+var INC_DEC_OPERATOR []string = []string{"++", "--"}
+var STREAM_OPERATOR []string = []string{">>", "<<"}
