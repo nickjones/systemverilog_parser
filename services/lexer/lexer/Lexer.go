@@ -2,6 +2,7 @@ package lexer
 
 import (
 	"fmt"
+	"strings"
 	"unicode"
 	"unicode/utf8"
 
@@ -27,42 +28,32 @@ type Lexer struct {
 	Width int
 }
 
-/*
-Backup to the beginning of the last read token.
-*/
-func (this *Lexer) Backup() {
-	this.Pos -= this.Width
+// Backup to the beginning of the last read token.
+func (l *Lexer) Backup() {
+	l.Pos -= l.Width
 }
 
-/*
-Returns a slice of the current input from the current lexer start position
-to the current position.
-*/
-func (this *Lexer) CurrentInput() string {
-	return this.Input[this.Start:this.Pos]
+// CurrentInput returns a slice of the current input from the current lexer start position
+// to the current position.
+func (l *Lexer) CurrentInput() string {
+	return l.Input[l.Start:l.Pos]
 }
 
-/*
-Decrement the position
-*/
-func (this *Lexer) Dec() {
-	this.Pos--
+// Dec decrements the position
+func (l *Lexer) Dec() {
+	l.Pos--
 }
 
-/*
-Puts a token onto the token channel. The value of this token is
-read from the input based on the current lexer position.
-*/
-func (this *Lexer) Emit(tokenType lexertoken.TokenType) {
-	this.Tokens <- lexertoken.Token{Type: tokenType, Value: this.Input[this.Start:this.Pos]}
-	this.Start = this.Pos
+// Emit puts a token onto the token channel. The value of l token is
+// read from the input based on the current lexer position.
+func (l *Lexer) Emit(tokenType lexertoken.TokenType) {
+	l.Tokens <- lexertoken.Token{Type: tokenType, Value: l.Input[l.Start:l.Pos]}
+	l.Start = l.Pos
 }
 
-/*
-Returns a token with error information.
-*/
-func (this *Lexer) Errorf(format string, args ...interface{}) LexFn {
-	this.Tokens <- lexertoken.Token{
+// Errorf returns a token with error information.
+func (l *Lexer) Errorf(format string, args ...interface{}) LexFn {
+	l.Tokens <- lexertoken.Token{
 		Type:  lexertoken.TOKEN_ERROR,
 		Value: fmt.Sprintf(format, args...),
 	}
@@ -70,126 +61,113 @@ func (this *Lexer) Errorf(format string, args ...interface{}) LexFn {
 	return nil
 }
 
-/*
-Ignores the current token by setting the lexer's start
-position to the current reading position.
-*/
-func (this *Lexer) Ignore() {
-	this.Start = this.Pos
+// Ignore ignores the current token by setting the lexer's start
+// position to the current reading position.
+func (l *Lexer) Ignore() {
+	l.Start = l.Pos
 }
 
-/*
-Increment the position
-*/
-func (this *Lexer) Inc() {
-	this.Pos++
-	if this.Pos >= utf8.RuneCountInString(this.Input) {
-		this.Emit(lexertoken.TOKEN_EOF)
+// Inc increments the position
+func (l *Lexer) Inc() {
+	l.Pos++
+	if l.Pos >= utf8.RuneCountInString(l.Input) {
+		l.Emit(lexertoken.TOKEN_EOF)
 	}
 }
 
-/*
-Return a slice of the input from the current lexer position
-to the end of the input string.
-*/
-func (this *Lexer) InputToEnd() string {
-	return this.Input[this.Pos:]
+// InputToEnd returns a slice of the input from the current lexer position
+// to the end of the input string.
+func (l *Lexer) InputToEnd() string {
+	return l.Input[l.Pos:]
 }
 
-/*
-Returns the true/false if the lexer is at the end of the
-input stream.
-*/
-func (this *Lexer) IsEOF() bool {
-	return this.Pos >= len(this.Input)
+// IsEOF returns the true/false if the lexer is at the end of the
+// input stream.
+func (l *Lexer) IsEOF() bool {
+	return l.Pos >= len(l.Input)
 }
 
-/*
-Returns true/false if then next character is whitespace
-*/
-func (this *Lexer) IsWhitespace() bool {
-	ch, _ := utf8.DecodeRuneInString(this.Input[this.Pos:])
+// IsWhitespace returns true/false if then next character is whitespace
+func (l *Lexer) IsWhitespace() bool {
+	ch, _ := utf8.DecodeRuneInString(l.Input[l.Pos:])
 	return unicode.IsSpace(ch)
 }
 
-/*
-Reads the next rune (character) from the input stream
-and advances the lexer position.
-*/
-func (this *Lexer) Next() rune {
-	if this.Pos >= utf8.RuneCountInString(this.Input) {
-		this.Width = 0
+// Next reads the next rune (character) from the input stream
+// and advances the lexer position.
+func (l *Lexer) Next() rune {
+	if l.Pos >= utf8.RuneCountInString(l.Input) {
+		l.Width = 0
 		return lexertoken.EOF
 	}
 
-	result, width := utf8.DecodeRuneInString(this.Input[this.Pos:])
+	result, width := utf8.DecodeRuneInString(l.Input[l.Pos:])
 
-	this.Width = width
-	this.Pos += this.Width
+	l.Width = width
+	l.Pos += l.Width
 	return result
 }
 
-/*
-Return the next token from the channel
-*/
-func (this *Lexer) NextToken() lexertoken.Token {
+// NextToken returns the next token from the channel
+func (l *Lexer) NextToken() lexertoken.Token {
 	for {
 		select {
-		case token := <-this.Tokens:
+		case token := <-l.Tokens:
 			return token
 		default:
-			this.State = this.State(this)
+			l.State = l.State(l)
 		}
 	}
-
-	panic("Lexer.NextToken reached an invalid state!!")
 }
 
-/*
-Returns the next rune in the stream, then puts the lexer
-position back. Basically reads the next rune without consuming
-it.
-*/
-func (this *Lexer) Peek() rune {
-	rune := this.Next()
-	this.Backup()
+// Peek returns the next rune in the stream, then puts the lexer
+// position back. Basically reads the next rune without consuming
+// it.
+func (l *Lexer) Peek() rune {
+	rune := l.Next()
+	l.Backup()
 	return rune
 }
 
-/*
-Starts the lexical analysis and feeding tokens into the
-token channel.
-*/
-func (this *Lexer) Run() {
+// Run starts the lexical analysis and feeding tokens into the
+// token channel.
+func (l *Lexer) Run() {
 	for state := LexBegin; state != nil; {
-		state = state(this)
+		state = state(l)
 	}
 
-	this.Shutdown()
+	l.Shutdown()
 }
 
-/*
-Shuts down the token stream
-*/
-func (this *Lexer) Shutdown() {
-	close(this.Tokens)
+// Shutdown shuts down the token stream
+func (l *Lexer) Shutdown() {
+	close(l.Tokens)
 }
 
-/*
-Skips whitespace until we get something meaningful.
-*/
-func (this *Lexer) SkipWhitespace() {
+// SkipWhitespace skips whitespace until we get something meaningful.
+func (l *Lexer) SkipWhitespace() {
 	for {
-		ch := this.Next()
+		ch := l.Next()
 
 		if !unicode.IsSpace(ch) {
-			this.Dec()
+			l.Dec()
 			break
 		}
 
 		if ch == lexertoken.EOF {
-			this.Emit(lexertoken.TOKEN_EOF)
+			l.Emit(lexertoken.TOKEN_EOF)
 			break
 		}
 	}
+}
+
+// HasKeyword iterates through reserved keywords and return true
+// if the input matches a keyword.
+func (l *Lexer) HasKeyword() bool {
+	for _, value := range lexertoken.KEYWORDS {
+		if strings.HasPrefix(l.InputToEnd(), value) {
+			return true
+		}
+	}
+	return false
 }
