@@ -68,7 +68,7 @@ func Parse(fileName, input string) string {
 		// 	key = ""
 		// }
 		default:
-			fmt.Printf("%s\n", token.String())
+			fmt.Printf("Token: %d value: %s\n", token.Type, token.String())
 		}
 	}
 

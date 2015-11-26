@@ -1,20 +1,33 @@
 package main
 
 import (
-	// "encoding/json"
-	// "log"
+	"flag"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/nickjones/systemverilog_parser/services/parser"
 )
+
+var (
+	debug = flag.Bool("debug", false, "Enable debug logging")
+)
+
+func init() {
+	flag.Parse()
+}
 
 func main() {
 	sampleInput := `
 package pkg;
 
+// Import UVM package
 import uvm_pkg::*;
 
+/* Example multiline
+ * comment.
+*/
 class my_component extends uvm_component;
 
+  // Constructor
   function new(string name, uvm_component parent);
     super.new(name, parent);
   endfunction
@@ -28,6 +41,7 @@ endclass
 
 endpackage
 
+// Top-level module
 module test;
    import uvm_pkg::*;
    import pkg::*;
@@ -39,6 +53,9 @@ module test;
    end
 endmodule
 	`
+	if *debug {
+		log.SetLevel(log.DebugLevel)
+	}
 
 	_ = parser.Parse("sample.sv", sampleInput)
 	// prettyJSON, err := json.MarshalIndent(parsedINIFile, "", "   ")

@@ -1,10 +1,11 @@
 package lexer
 
 import (
-	"github.com/nickjones/systemverilog_parser/services/lexer/errors"
-	"github.com/nickjones/systemverilog_parser/services/lexer/lexertoken"
 	"log"
 	"strings"
+
+	"github.com/nickjones/systemverilog_parser/services/lexer/errors"
+	"github.com/nickjones/systemverilog_parser/services/lexer/lexertoken"
 )
 
 /*
@@ -23,6 +24,7 @@ func LexPackage(lexer *Lexer) LexFn {
 		if strings.HasPrefix(lexer.InputToEnd(), ";") {
 			lexer.Emit(lexertoken.TOKEN_PACKAGE)
 			lexer.Pos++
+			lexer.Ignore()
 			return LexBegin
 		}
 
@@ -42,6 +44,7 @@ func LexEndPackage(lexer *Lexer) LexFn {
 		if strings.HasPrefix(lexer.InputToEnd(), "\n") {
 			lexer.Emit(lexertoken.TOKEN_ENDPACKAGE)
 			lexer.Pos++
+			lexer.Ignore()
 			return LexBegin
 		} else if strings.HasPrefix(lexer.InputToEnd(), ":") {
 			lexer.Emit(lexertoken.TOKEN_ENDPACKAGE)

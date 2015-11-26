@@ -6,6 +6,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/nickjones/systemverilog_parser/services/lexer/lexertoken"
 )
 
@@ -161,13 +162,31 @@ func (l *Lexer) SkipWhitespace() {
 	}
 }
 
-// HasKeyword iterates through reserved keywords and return true
-// if the input matches a keyword.
-func (l *Lexer) HasKeyword() bool {
-	for _, value := range lexertoken.KEYWORDS {
-		if strings.HasPrefix(l.InputToEnd(), value) {
-			return true
+// SkipLineEndings skips over \r \n control characters
+func (l *Lexer) SkipLineEndings() {
+	for {
+		ch := l.Next()
+
+		if !(ch != '\n' && ch != '\r') {
+			l.Dec()
+			break
+		}
+
+		if ch == lexertoken.EOF {
+			l.Emit(lexertoken.TOKEN_EOF)
+			break
 		}
 	}
-	return false
+}
+
+// HasKeyword iterates through reserved keywords and return true
+// if the input matches a keyword.
+func (l *Lexer) HasKeyword() int {
+	for _, value := range lexertoken.KEYWORDS {
+		if strings.HasPrefix(l.InputToEnd(), value) {
+			log.Debugf("Found keyword %s\n", value)
+			return len(value)
+		}
+	}
+	return 0
 }

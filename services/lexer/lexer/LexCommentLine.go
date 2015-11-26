@@ -1,8 +1,9 @@
 package lexer
 
 import (
-	"github.com/nickjones/systemverilog_parser/services/lexer/lexertoken"
 	"strings"
+
+	"github.com/nickjones/systemverilog_parser/services/lexer/lexertoken"
 )
 
 /*
