@@ -33,12 +33,6 @@ func Parse(fileName, input string) string {
 	for {
 		token = l.NextToken()
 
-		// if token.Type != lexertoken.TOKEN_VALUE {
-		// 	tokenValue = strings.TrimSpace(token.Value)
-		// } else {
-		// 	tokenValue = token.Value
-		// }
-
 		if isEOF(token) {
 			// output.Sections = append(output.Sections, section)
 			break

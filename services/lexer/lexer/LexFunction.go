@@ -70,10 +70,11 @@ func LexFuncArgs(lexer *Lexer) LexFn {
 			return lexer.Errorf(errors.LEXER_ERROR_UNEXPECTED_EOF)
 		}
 
-		if len := lexer.HasKeyword(); len != 0 {
-			log.Debugf("Found keyword inside function arguments: len %d\n", len)
+		if length := lexer.HasKeyword(); length != 0 {
+			log.Debugf("Found keyword inside function arguments: length %d\n", length)
+			log.Debugf("InputToEnd: %s\n", lexer.InputToEnd())
+			lexer.Pos += length
 			lexer.Emit(lexertoken.TOKEN_KEYWORD)
-			lexer.Pos += len
 			lexer.SkipWhitespace()
 			lexer.Ignore()
 			continue
@@ -96,6 +97,7 @@ func LexFuncArgs(lexer *Lexer) LexFn {
 				return LexFuncArgs
 			}
 		} else if strings.HasPrefix(lexer.InputToEnd(), ");") {
+			semiColonPos := lexer.Pos
 			currInput := lexer.CurrentInput()
 			if strings.Contains(currInput, " ") {
 				log.Debugln("Found space before ');', user defined type")
@@ -124,7 +126,8 @@ func LexFuncArgs(lexer *Lexer) LexFn {
 				lexer.Ignore()
 				lexer.Pos = eol
 				lexer.Emit(lexertoken.TOKEN_IDENTIFIER)
-				lexer.Pos += 2 // ');'
+				lexer.Pos = semiColonPos + 2 // ');'
+				lexer.Ignore()
 				return LexBegin
 			} else {
 				log.Debugln("No user type, found identifier")

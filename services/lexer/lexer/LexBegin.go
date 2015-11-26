@@ -16,13 +16,8 @@ func LexBegin(lexer *Lexer) LexFn {
 	lexer.SkipWhitespace()
 
 	log.Println("LexBegin")
-	// TODO: Abstract classes
-	if strings.HasPrefix(lexer.InputToEnd(), "\n") {
-		log.Debugf("InputToEnd: %s\n", lexer.InputToEnd())
-		lexer.Inc()
-		lexer.Ignore()
-		return LexBegin
-	} else if strings.HasPrefix(lexer.InputToEnd(), lexertoken.SINGLE_LINE_COMMENT) {
+	// log.Debugf("InputToEnd: %s\n-------\n", lexer.InputToEnd())
+	if strings.HasPrefix(lexer.InputToEnd(), lexertoken.SINGLE_LINE_COMMENT) {
 		return LexCommentLine
 	} else if strings.HasPrefix(lexer.InputToEnd(), lexertoken.MULTI_LINE_COMMENT_START) {
 		return LexMultilineComment
@@ -70,6 +65,5 @@ func LexBegin(lexer *Lexer) LexFn {
 			}
 		}
 		return LexStatement
-		// return lexer.Errorf(errors.LEXER_ERROR_UNPARSABLE_STATEMENT)
 	}
 }
