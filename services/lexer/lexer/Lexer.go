@@ -183,7 +183,7 @@ func (l *Lexer) SkipLineEndings() {
 // if the input matches a keyword.
 func (l *Lexer) HasKeyword() int {
 	for _, value := range lexertoken.KEYWORDS {
-		if strings.HasPrefix(l.InputToEnd(), value) {
+		if strings.HasPrefix(l.InputToEnd(), fmt.Sprintf("%s ", value)) {
 			log.Debugf("Found keyword %s\n", value)
 			return len(value)
 		}

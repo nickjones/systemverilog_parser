@@ -26,6 +26,11 @@ import uvm_pkg::*;
  * comment.
 */
 class my_component extends uvm_component;
+  // Some member variable examples
+  static int class_var = 2;
+  int int_var;
+  int int_var_init = 3;
+  longint unsigned lint_unsigned = 4;
 
   // Constructor
   function new(string name, uvm_component parent);

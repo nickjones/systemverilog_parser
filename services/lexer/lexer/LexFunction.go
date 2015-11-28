@@ -72,7 +72,6 @@ func LexFuncArgs(lexer *Lexer) LexFn {
 
 		if length := lexer.HasKeyword(); length != 0 {
 			log.Debugf("Found keyword inside function arguments: length %d\n", length)
-			log.Debugf("InputToEnd: %s\n", lexer.InputToEnd())
 			lexer.Pos += length
 			lexer.Emit(lexertoken.TOKEN_KEYWORD)
 			lexer.SkipWhitespace()

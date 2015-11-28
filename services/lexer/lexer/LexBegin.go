@@ -57,13 +57,13 @@ func LexBegin(lexer *Lexer) LexFn {
 		lexer.Pos += len(lexertoken.TASK)
 		return LexTask
 	} else {
-		for _, value := range lexertoken.KEYWORDS {
-			if strings.HasPrefix(lexer.InputToEnd(), value) {
-				lexer.Pos += len(value)
-				lexer.Emit(lexertoken.TOKEN_KEYWORD) // How do we construct a type here??
-				return LexBegin
-			}
-		}
+		// for _, value := range lexertoken.KEYWORDS {
+		// 	if strings.HasPrefix(lexer.InputToEnd(), value) {
+		// 		lexer.Pos += len(value)
+		// 		lexer.Emit(lexertoken.TOKEN_KEYWORD) // How do we construct a type here??
+		// 		return LexBegin
+		// 	}
+		// }
 		return LexStatement
 	}
 }
